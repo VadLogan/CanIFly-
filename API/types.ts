@@ -5,7 +5,7 @@ export interface ReqData {
   lat: number;
   lon: number;
   mass: number;
-  max_height: 596;
+  max_height: number;
   range: number;
   // Date in ISO format
   start_time: string;
