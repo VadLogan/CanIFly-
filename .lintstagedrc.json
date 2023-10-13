@@ -1,4 +1,5 @@
 {
-    "*.ts*": ["npx tsc --noEmit","eslint --cache --fix"],
+    "**/*.ts": "yarn run tsc",
+    "*.ts*": "eslint --cache --fix",
     "*.{js,ts,tsx,md}": "prettier --write"
 }

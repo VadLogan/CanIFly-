@@ -1,9 +1,9 @@
 import axios, {AxiosResponse} from 'axios';
-import {ZONE_STATUS, GetZoneParams} from '../types';
+import {ZONE_STATUS, GetZoneParams} from '../../types';
 import {API_URL, FORBIDDEN_ZONES, RESTRICTED_ZONES} from './constants';
 import {ReqData, APIData} from './types';
 
-export async function getZoneData(param: GetZoneParams): ZONE_STATUS {
+export async function getZoneData(param: GetZoneParams): Promise<ZONE_STATUS> {
   const {data} = await axios.post<APIData, AxiosResponse<APIData>, ReqData>(
     API_URL,
     {
