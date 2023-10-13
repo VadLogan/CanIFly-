@@ -13,6 +13,9 @@
   },
   "dependencies": {
     "@react-native-community/netinfo": "^9.4.1",
+    "appcenter": "5.0.0",
+    "appcenter-analytics": "5.0.0",
+    "appcenter-crashes": "5.0.0",
     "axios": "^1.5.1",
     "react": "18.2.0",
     "react-native": "0.72.6",
