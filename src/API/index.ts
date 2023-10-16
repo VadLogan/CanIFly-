@@ -1,7 +1,18 @@
 import axios, {AxiosResponse} from 'axios';
-import {ZONE_STATUS, GetZoneParams} from '../../types';
-import {API_URL, FORBIDDEN_ZONES, RESTRICTED_ZONES} from './constants';
-import {ReqData, APIData} from './types';
+import {
+  ZONE_STATUS,
+  GetZoneParams,
+  GeoPosition,
+  WeatherData,
+} from '../../types';
+import {
+  API_URL,
+  FORBIDDEN_ZONES,
+  RESTRICTED_ZONES,
+  WEATHER_API_URL,
+  WEATHER_API_KEY,
+} from './constants';
+import {ReqData, APIData, WeatherAPIData} from './types';
 
 export async function getZoneData(param: GetZoneParams): Promise<ZONE_STATUS> {
   const {data} = await axios.post<APIData, AxiosResponse<APIData>, ReqData>(
@@ -36,4 +47,23 @@ export async function getZoneData(param: GetZoneParams): Promise<ZONE_STATUS> {
     return ZONE_STATUS.RESTRICTED;
   }
   return ZONE_STATUS.FORBIDDEN;
+}
+
+export async function getZoneWeather(param: GeoPosition): Promise<WeatherData> {
+  const {data} = await axios.get<WeatherAPIData>(WEATHER_API_URL, {
+    params: {
+      key: WEATHER_API_KEY,
+      q: `${param.lat},${param.lon}`,
+    },
+  });
+  console.log(data);
+  const windData = data.current;
+
+  return {
+    wind: {
+      windDegree: windData.wind_degree,
+      windDir: windData.wind_dir,
+      windKph: windData.wind_kph,
+    },
+  };
 }

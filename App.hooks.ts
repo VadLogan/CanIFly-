@@ -1,9 +1,10 @@
 import {useEffect, useState, useRef} from 'react';
 import {PermissionsAndroid, Platform, AppState} from 'react-native';
+// @ts-ignore
 import Geolocation from 'react-native-geolocation-service';
 import {useNetInfo} from '@react-native-community/netinfo';
-import {getZoneData} from './src/API';
-import {ZONE_STATUS} from './types';
+import {getZoneData, getZoneWeather} from './src/API';
+import {WindData, ZONE_STATUS} from './types';
 
 async function requestLocationPermission() {
   if (Platform.OS === 'android') {
@@ -32,6 +33,8 @@ async function requestLocationPermission() {
 export function useGeoZoneData() {
   const [zoneStatus, setZoneStatus] = useState<ZONE_STATUS>(ZONE_STATUS.ALLOW);
   const [isLoading, setIsLoading] = useState(true);
+  const [windData, setWindData] = useState<WindData | null>(null);
+  const [globalError, setGlobalError] = useState<string | null>(null);
 
   const {isConnected} = useNetInfo();
   const appState = useRef(AppState.currentState);
@@ -45,42 +48,52 @@ export function useGeoZoneData() {
           nextAppState === 'active' &&
           isConnected
         ) {
-          mapCurrentUserPosotionToZone();
+          mapCurrentUserPosotionToZoneData();
         }
 
         appState.current = nextAppState;
       },
     );
 
-    mapCurrentUserPosotionToZone();
+    mapCurrentUserPosotionToZoneData();
     return () => {
       subscription.remove();
     };
   }, [isConnected]);
 
-  async function mapCurrentUserPosotionToZone() {
+  async function mapCurrentUserPosotionToZoneData() {
     try {
       setIsLoading(true);
       await requestLocationPermission();
       Geolocation.getCurrentPosition(
         async success => {
-          const status = await getZoneData({
-            lat: success.coords.latitude,
-            lon: success.coords.longitude,
-          });
+          try {
+            const status = await getZoneData({
+              lat: success.coords.latitude,
+              lon: success.coords.longitude,
+            });
 
-          setZoneStatus(status);
+            const {wind} = await getZoneWeather({
+              lat: success.coords.latitude,
+              lon: success.coords.longitude,
+            });
 
-          setIsLoading(false);
+            setWindData(wind);
+            setZoneStatus(status);
+          } catch (error) {
+            setGlobalError(`Error: ${JSON.stringify(error)}`);
+          } finally {
+            setIsLoading(false);
+          }
         },
         err => {
           setIsLoading(false);
-          console.log({err});
+          setGlobalError(`Error: ${JSON.stringify(err)}`);
         },
       );
     } catch (error) {
       setIsLoading(false);
-      console.log(error);
+      setGlobalError(`Error: ${JSON.stringify(error)}`);
     }
   }
 
@@ -88,5 +101,7 @@ export function useGeoZoneData() {
     zoneStatus,
     isLoading,
     isConnected,
+    windData,
+    globalError,
   };
 }

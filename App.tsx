@@ -20,6 +20,7 @@ import {AppText} from './src/AppText';
 import {GREEN, RED, YELLOW} from './Config/pallet';
 import {ZONE_STATUS} from './types';
 import {useGeoZoneData} from './App.hooks';
+import {Wind} from './src/Wind/Wind';
 
 const APP_ZONE_TEXT = {
   [ZONE_STATUS.ALLOW]: 'GREEN ZONE',
@@ -28,8 +29,18 @@ const APP_ZONE_TEXT = {
 };
 
 function App(): JSX.Element {
-  const {zoneStatus, isLoading, isConnected} = useGeoZoneData();
+  const {zoneStatus, isLoading, isConnected, globalError, windData} =
+    useGeoZoneData();
   const isDarkMode = useColorScheme() === 'dark';
+
+  if (globalError) {
+    return (
+      <SafeAreaView style={[styles.root, styles.loadingFlightZone]}>
+        <AppText style={[styles.text, styles.redColor]}>{globalError}</AppText>
+      </SafeAreaView>
+    );
+  }
+
   if (isLoading) {
     return (
       <SafeAreaView style={[styles.root, styles.loadingFlightZone]}>
@@ -65,6 +76,12 @@ function App(): JSX.Element {
       />
 
       <View>
+        {windData && (
+          <View style={styles.block}>
+            <AppText style={styles.text}>WIND :</AppText>
+            <Wind {...windData} />
+          </View>
+        )}
         <AppText style={styles.text}>Can I Fly ?</AppText>
         <AppText style={styles.text}>{APP_ZONE_TEXT[zoneStatus]}</AppText>
       </View>
@@ -96,6 +113,12 @@ const styles = StyleSheet.create({
   },
   blackColor: {
     color: '#000',
+  },
+  redColor: {
+    color: RED,
+  },
+  block: {
+    marginVertical: 10,
   },
 });
 
