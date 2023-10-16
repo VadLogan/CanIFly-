@@ -1,4 +1,4 @@
-package com.dev.canifly;
+package com.canifly;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
