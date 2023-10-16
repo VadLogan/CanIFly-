@@ -1,4 +1,4 @@
-package com.canifly;
+package com.dev.canifly;
 
 import android.app.Application;
 import com.facebook.react.PackageList;

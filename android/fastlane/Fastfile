@@ -1,0 +1,18 @@
+lane :build_dev do
+  android_change_string_app_name(newName: ENV["DEV_APP_NAME"])
+  rename_android_package(                                                                                                                                                                                                                                                              
+      path: "./",                                                                                                                                                                                                                                                                        
+      package_name: ENV["STAGE_PACKAGE_NAME"],                                                                                                                                                                                                                                        
+      new_package_name: ENV["DEV_PACKAGE_NAME"],                                                                                                                                                                                                                                
+  )
+end
+
+lane :build_stage do
+  android_change_string_app_name(newName: ENV["STAGE_APP_NAME"])
+  increment_version_code(app_project_dir: '**/app')
+  rename_android_package(                                                                                                                                                                                                                                                              
+      path: "./",                                                                                                                                                                                                                                                                        
+      package_name: ENV["DEV_PACKAGE_NAME"],                                                                                                                                                                                                                                        
+      new_package_name: ENV["STAGE_PACKAGE_NAME"],                                                                                                                                                                                                                                
+  )
+end

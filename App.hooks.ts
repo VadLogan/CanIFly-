@@ -1,6 +1,6 @@
 import {useEffect, useState, useRef} from 'react';
 import {PermissionsAndroid, Platform, AppState} from 'react-native';
-import {getCurrentPosition} from 'react-native-geolocation-service';
+import Geolocation from 'react-native-geolocation-service';
 import {useNetInfo} from '@react-native-community/netinfo';
 import {getZoneData} from './src/API';
 import {ZONE_STATUS} from './types';
@@ -62,7 +62,7 @@ export function useGeoZoneData() {
     try {
       setIsLoading(true);
       await requestLocationPermission();
-      getCurrentPosition(
+      Geolocation.getCurrentPosition(
         async success => {
           const status = await getZoneData({
             lat: success.coords.latitude,
