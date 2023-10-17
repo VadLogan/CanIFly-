@@ -56,14 +56,18 @@ export async function getZoneWeather(param: GeoPosition): Promise<WeatherData> {
       q: `${param.lat},${param.lon}`,
     },
   });
-  console.log(data);
-  const windData = data.current;
+
+  const currentData = data.current;
 
   return {
+    temperature: {
+      tempC: currentData.temp_c,
+      iconURI: currentData.condition?.icon,
+    },
     wind: {
-      windDegree: windData.wind_degree,
-      windDir: windData.wind_dir,
-      windKph: windData.wind_kph,
+      windDegree: currentData.wind_degree,
+      windDir: currentData.wind_dir,
+      windKph: currentData.wind_kph,
     },
   };
 }

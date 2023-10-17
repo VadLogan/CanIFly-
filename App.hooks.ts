@@ -1,10 +1,10 @@
-import {useEffect, useState, useRef} from 'react';
+import {useEffect, useState, useRef, useReducer, Reducer} from 'react';
 import {PermissionsAndroid, Platform, AppState} from 'react-native';
 // @ts-ignore
 import Geolocation from 'react-native-geolocation-service';
 import {useNetInfo} from '@react-native-community/netinfo';
 import {getZoneData, getZoneWeather} from './src/API';
-import {WindData, ZONE_STATUS} from './types';
+import {WindData, ZONE_STATUS, Action, TemperatureData} from './types';
 
 async function requestLocationPermission() {
   if (Platform.OS === 'android') {
@@ -30,10 +30,60 @@ async function requestLocationPermission() {
   throw Error("Permisions doesn't granted");
 }
 
+interface State {
+  zoneStatus: ZONE_STATUS;
+  windData: WindData | null;
+  temperatureData: TemperatureData | null;
+}
+
+const INITAL_STATE: State = {
+  zoneStatus: ZONE_STATUS.ALLOW,
+  windData: null,
+  temperatureData: null,
+};
+
+type Actions =
+  | Action<'set_zone_status', ZONE_STATUS>
+  | Action<'set_wind_data', WindData | null>
+  | Action<'set_temperature_data', TemperatureData | null>
+  | Action<'batch_update', State>;
+
+const reducer: Reducer<typeof INITAL_STATE, Actions> = (
+  state: typeof INITAL_STATE,
+  action: Actions,
+) => {
+  switch (action.type) {
+    case 'set_zone_status': {
+      return {
+        ...state,
+        zoneStatus: action.payload,
+      };
+    }
+    case 'set_wind_data': {
+      return {
+        ...state,
+        windData: action.payload,
+      };
+    }
+    case 'set_temperature_data': {
+      return {
+        ...state,
+        temperatureData: action.payload,
+      };
+    }
+    case 'batch_update': {
+      return {
+        temperatureData: action.payload.temperatureData,
+        zoneStatus: action.payload.zoneStatus,
+        windData: action.payload.windData,
+      };
+    }
+  }
+};
+
 export function useGeoZoneData() {
-  const [zoneStatus, setZoneStatus] = useState<ZONE_STATUS>(ZONE_STATUS.ALLOW);
+  const [state, dispatch] = useReducer(reducer, INITAL_STATE);
   const [isLoading, setIsLoading] = useState(true);
-  const [windData, setWindData] = useState<WindData | null>(null);
   const [globalError, setGlobalError] = useState<string | null>(null);
 
   const {isConnected} = useNetInfo();
@@ -68,18 +118,27 @@ export function useGeoZoneData() {
       Geolocation.getCurrentPosition(
         async success => {
           try {
-            const status = await getZoneData({
-              lat: success.coords.latitude,
-              lon: success.coords.longitude,
-            });
+            const [status, weather] = await Promise.all([
+              getZoneData({
+                lat: success.coords.latitude,
+                lon: success.coords.longitude,
+              }),
+              getZoneWeather({
+                lat: success.coords.latitude,
+                lon: success.coords.longitude,
+              }),
+            ]);
 
-            const {wind} = await getZoneWeather({
-              lat: success.coords.latitude,
-              lon: success.coords.longitude,
-            });
+            const {wind, temperature} = weather;
 
-            setWindData(wind);
-            setZoneStatus(status);
+            dispatch({
+              type: 'batch_update',
+              payload: {
+                windData: wind,
+                temperatureData: temperature,
+                zoneStatus: status,
+              },
+            });
           } catch (error) {
             setGlobalError(`Error: ${JSON.stringify(error)}`);
           } finally {
@@ -98,10 +157,9 @@ export function useGeoZoneData() {
   }
 
   return {
-    zoneStatus,
+    ...state,
     isLoading,
     isConnected,
-    windData,
     globalError,
   };
 }

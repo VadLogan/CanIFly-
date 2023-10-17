@@ -17,10 +17,13 @@ import {
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 
 import {AppText} from './src/AppText';
+
 import {GREEN, RED, YELLOW} from './Config/pallet';
 import {ZONE_STATUS} from './types';
 import {useGeoZoneData} from './App.hooks';
 import {Wind} from './src/Wind/Wind';
+import {H1} from './src/H1/H1';
+import {H2} from './src/H2/H2';
 
 const APP_ZONE_TEXT = {
   [ZONE_STATUS.ALLOW]: 'GREEN ZONE',
@@ -36,7 +39,9 @@ function App(): JSX.Element {
   if (globalError) {
     return (
       <SafeAreaView style={[styles.root, styles.loadingFlightZone]}>
-        <AppText style={[styles.text, styles.redColor]}>{globalError}</AppText>
+        <AppText style={[styles.textAlign, styles.redColor]}>
+          {globalError}
+        </AppText>
       </SafeAreaView>
     );
   }
@@ -44,7 +49,9 @@ function App(): JSX.Element {
   if (isLoading) {
     return (
       <SafeAreaView style={[styles.root, styles.loadingFlightZone]}>
-        <AppText style={[styles.text, styles.blackColor]}>Checking...</AppText>
+        <AppText style={[styles.textAlign, styles.blackColor]}>
+          Checking...
+        </AppText>
         <ActivityIndicator />
       </SafeAreaView>
     );
@@ -53,7 +60,7 @@ function App(): JSX.Element {
   if (!isConnected && !isLoading) {
     return (
       <SafeAreaView style={[styles.root, styles.loadingFlightZone]}>
-        <AppText style={[styles.text, styles.blackColor]}>
+        <AppText style={[styles.textAlign, styles.blackColor]}>
           No Internet connection
         </AppText>
       </SafeAreaView>
@@ -74,16 +81,21 @@ function App(): JSX.Element {
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
       />
-
-      <View>
-        {windData && (
-          <View style={styles.block}>
-            <AppText style={styles.text}>WIND :</AppText>
-            <Wind {...windData} />
-          </View>
-        )}
-        <AppText style={styles.text}>Can I Fly ?</AppText>
-        <AppText style={styles.text}>{APP_ZONE_TEXT[zoneStatus]}</AppText>
+      <View style={styles.sectionCentered}>
+        <H1>Can I Fly ?</H1>
+        <View style={styles.block}>
+          {}
+          {windData && (
+            <View style={styles.block}>
+              <H2 style={styles.textAlign}>WIND :</H2>
+              <Wind {...windData} />
+            </View>
+          )}
+          <H2 style={styles.textAlign}>ZONE :</H2>
+          <AppText style={styles.textAlign}>
+            {APP_ZONE_TEXT[zoneStatus]}
+          </AppText>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -92,6 +104,8 @@ function App(): JSX.Element {
 const styles = StyleSheet.create({
   root: {
     height: '100%',
+  },
+  sectionCentered: {
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -107,9 +121,8 @@ const styles = StyleSheet.create({
   forbiddenZone: {
     backgroundColor: RED,
   },
-  text: {
+  textAlign: {
     textAlign: 'center',
-    fontSize: 22,
   },
   blackColor: {
     color: '#000',

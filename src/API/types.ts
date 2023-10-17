@@ -35,9 +35,16 @@ export interface WeatherAPIData {
   current: Current;
   location: Location;
 }
+
+export interface Condition {
+  text: string;
+  icon: string;
+  code: number;
+}
+
 export interface Current {
   cloud: number;
-  condition?: null[] | null;
+  condition?: Condition;
   feelslike_c: number;
   feelslike_f: number;
   gust_kph: number;

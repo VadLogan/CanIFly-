@@ -7,11 +7,11 @@ interface AppTextProps {
 }
 
 export const AppText = ({style, children}: PropsWithChildren<AppTextProps>) => {
-  const styles = [styleAppText.root, style];
-  return <Text style={styles}>{children}</Text>;
+  const appTextStyles = [styles.root, style];
+  return <Text style={appTextStyles}>{children}</Text>;
 };
 
-const styleAppText = StyleSheet.create({
+const styles = StyleSheet.create({
   root: {
     color: WHITE,
   },

@@ -1,4 +1,4 @@
-import {FC} from 'react';
+import React, {FC} from 'react';
 import {View, StyleSheet} from 'react-native';
 import {AppText} from '../AppText';
 import {WindData as WindDataProps} from '../../types';
