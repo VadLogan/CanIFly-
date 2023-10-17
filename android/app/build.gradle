@@ -73,9 +73,9 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.canifly"
+    namespace "com.dev.canifly"
     defaultConfig {
-        applicationId "com.canifly"
+        applicationId "com.dev.canifly"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 7

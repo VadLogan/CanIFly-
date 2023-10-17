@@ -36,7 +36,7 @@ interface State {
   temperatureData: TemperatureData | null;
 }
 
-const INITAL_STATE: State = {
+const INITIAL_STATE: State = {
   zoneStatus: ZONE_STATUS.ALLOW,
   windData: null,
   temperatureData: null,
@@ -48,8 +48,8 @@ type Actions =
   | Action<'set_temperature_data', TemperatureData | null>
   | Action<'batch_update', State>;
 
-const reducer: Reducer<typeof INITAL_STATE, Actions> = (
-  state: typeof INITAL_STATE,
+const reducer: Reducer<typeof INITIAL_STATE, Actions> = (
+  state: typeof INITIAL_STATE,
   action: Actions,
 ) => {
   switch (action.type) {
@@ -82,7 +82,7 @@ const reducer: Reducer<typeof INITAL_STATE, Actions> = (
 };
 
 export function useGeoZoneData() {
-  const [state, dispatch] = useReducer(reducer, INITAL_STATE);
+  const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
   const [isLoading, setIsLoading] = useState(true);
   const [globalError, setGlobalError] = useState<string | null>(null);
 

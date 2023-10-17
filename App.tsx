@@ -24,6 +24,7 @@ import {useGeoZoneData} from './App.hooks';
 import {Wind} from './src/Wind/Wind';
 import {H1} from './src/H1/H1';
 import {H2} from './src/H2/H2';
+import {Temperature} from './src/Temperature/Temperature';
 
 const APP_ZONE_TEXT = {
   [ZONE_STATUS.ALLOW]: 'GREEN ZONE',
@@ -32,8 +33,14 @@ const APP_ZONE_TEXT = {
 };
 
 function App(): JSX.Element {
-  const {zoneStatus, isLoading, isConnected, globalError, windData} =
-    useGeoZoneData();
+  const {
+    zoneStatus,
+    isLoading,
+    isConnected,
+    globalError,
+    windData,
+    temperatureData,
+  } = useGeoZoneData();
   const isDarkMode = useColorScheme() === 'dark';
 
   if (globalError) {
@@ -81,21 +88,25 @@ function App(): JSX.Element {
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
       />
-      <View style={styles.sectionCentered}>
-        <H1>Can I Fly ?</H1>
-        <View style={styles.block}>
-          {}
-          {windData && (
-            <View style={styles.block}>
-              <H2 style={styles.textAlign}>WIND :</H2>
-              <Wind {...windData} />
-            </View>
-          )}
-          <H2 style={styles.textAlign}>ZONE :</H2>
-          <AppText style={styles.textAlign}>
-            {APP_ZONE_TEXT[zoneStatus]}
-          </AppText>
-        </View>
+
+      <H1 style={styles.textAlign}>Can I Fly ?</H1>
+      <View style={styles.block}>
+        {temperatureData && (
+          <View style={styles.block}>
+            <H1 style={styles.textAlign}>TEMPERATURE :</H1>
+            <Temperature {...temperatureData} />
+          </View>
+        )}
+        {windData && (
+          <View style={styles.block}>
+            <H1 style={styles.textAlign}>WIND :</H1>
+            <Wind {...windData} />
+          </View>
+        )}
+      </View>
+      <View style={styles.block}>
+        <H1 style={styles.textAlign}>ZONE :</H1>
+        <H2 style={styles.textAlign}>{APP_ZONE_TEXT[zoneStatus]}</H2>
       </View>
     </SafeAreaView>
   );
@@ -104,11 +115,10 @@ function App(): JSX.Element {
 const styles = StyleSheet.create({
   root: {
     height: '100%',
-  },
-  sectionCentered: {
-    justifyContent: 'center',
+    justifyContent: 'space-around',
     alignItems: 'center',
   },
+
   loadingFlightZone: {
     backgroundColor: Colors.white,
   },
