@@ -19,12 +19,10 @@ import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {AppText} from './src/AppText';
 
 import {GREEN, RED, YELLOW} from './Config/pallet';
-import {ZONE_STATUS} from './types';
+import {ENTITY_STATUS as ZONE_STATUS} from './types';
 import {useGeoZoneData} from './App.hooks';
-import {Wind} from './src/Wind/Wind';
 import {H1} from './src/H1/H1';
-import {H2} from './src/H2/H2';
-import {Temperature} from './src/Temperature/Temperature';
+import {getWindStatus, getCoordsStatus} from './src/Utils';
 
 const APP_ZONE_TEXT = {
   [ZONE_STATUS.ALLOW]: 'GREEN ZONE',
@@ -33,14 +31,8 @@ const APP_ZONE_TEXT = {
 };
 
 function App(): JSX.Element {
-  const {
-    zoneStatus,
-    isLoading,
-    isConnected,
-    globalError,
-    windData,
-    temperatureData,
-  } = useGeoZoneData();
+  const {zoneStatus, isLoading, isConnected, globalError, windData} =
+    useGeoZoneData();
   const isDarkMode = useColorScheme() === 'dark';
 
   if (globalError) {
@@ -73,12 +65,13 @@ function App(): JSX.Element {
       </SafeAreaView>
     );
   }
-
+  const windStatus = windData ? getWindStatus(windData.windKph) : undefined;
+  const cordsStatus = getCoordsStatus(zoneStatus, windStatus);
   const backgroundStyle = isLoading
     ? styles.loadingFlightZone
-    : zoneStatus === ZONE_STATUS.ALLOW
+    : cordsStatus === ZONE_STATUS.ALLOW
     ? styles.freeFlightZone
-    : zoneStatus === ZONE_STATUS.RESTRICTED
+    : cordsStatus === ZONE_STATUS.RESTRICTED
     ? styles.restrictedZone
     : styles.forbiddenZone;
 
@@ -88,25 +81,22 @@ function App(): JSX.Element {
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
       />
-
-      <H1 style={styles.textAlign}>Can I Fly ?</H1>
+      <H1 style={styles.textAlign}>DRONE: BETA FPV PRO</H1>
       <View style={styles.block}>
-        {temperatureData && (
-          <View style={styles.block}>
-            <H1 style={styles.textAlign}>TEMPERATURE :</H1>
-            <Temperature {...temperatureData} />
-          </View>
-        )}
+        <View style={styles.block}>
+          <H1
+            style={
+              styles.textAlign
+            }>{`ZONE(${APP_ZONE_TEXT[zoneStatus]}):`}</H1>
+          <H1 style={styles.textAlign}>{zoneStatus}</H1>
+        </View>
         {windData && (
           <View style={styles.block}>
-            <H1 style={styles.textAlign}>WIND :</H1>
-            <Wind {...windData} />
+            <H1
+              style={styles.textAlign}>{`WIND(${windData.windKph} km/h):`}</H1>
+            <H1 style={styles.textAlign}>{windStatus}</H1>
           </View>
         )}
-      </View>
-      <View style={styles.block}>
-        <H1 style={styles.textAlign}>ZONE :</H1>
-        <H2 style={styles.textAlign}>{APP_ZONE_TEXT[zoneStatus]}</H2>
       </View>
     </SafeAreaView>
   );

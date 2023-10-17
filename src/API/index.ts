@@ -1,6 +1,6 @@
 import axios, {AxiosResponse} from 'axios';
 import {
-  ZONE_STATUS,
+  ENTITY_STATUS as ZONE_STATUS,
   GetZoneParams,
   GeoPosition,
   WeatherData,

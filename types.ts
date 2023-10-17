@@ -1,7 +1,7 @@
-export enum ZONE_STATUS {
-  ALLOW = 'allow',
-  RESTRICTED = 'restricted',
-  FORBIDDEN = 'forbidden',
+export enum ENTITY_STATUS {
+  ALLOW = '👌',
+  RESTRICTED = '🤦‍♂',
+  FORBIDDEN = '🙅‍♂',
 }
 
 export interface GeoPosition {

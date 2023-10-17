@@ -4,7 +4,12 @@ import {PermissionsAndroid, Platform, AppState} from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 import {useNetInfo} from '@react-native-community/netinfo';
 import {getZoneData, getZoneWeather} from './src/API';
-import {WindData, ZONE_STATUS, Action, TemperatureData} from './types';
+import {
+  WindData,
+  ENTITY_STATUS as ZONE_STATUS,
+  Action,
+  TemperatureData,
+} from './types';
 
 async function requestLocationPermission() {
   if (Platform.OS === 'android') {
@@ -117,15 +122,16 @@ export function useGeoZoneData() {
       await requestLocationPermission();
       Geolocation.getCurrentPosition(
         async success => {
+          const coords = success.coords;
           try {
             const [status, weather] = await Promise.all([
               getZoneData({
-                lat: success.coords.latitude,
-                lon: success.coords.longitude,
+                lat: coords.latitude,
+                lon: coords.longitude,
               }),
               getZoneWeather({
-                lat: success.coords.latitude,
-                lon: success.coords.longitude,
+                lat: coords.latitude,
+                lon: coords.longitude,
               }),
             ]);
 
